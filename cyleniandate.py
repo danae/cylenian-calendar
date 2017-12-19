@@ -64,7 +64,10 @@ def months_in_year(era, year):
     raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
     
   # Return the months in the year
-  return 12 + (1 if year == 6 or year == 12 else 0)
+  if year == 6 or year == 12:
+    return 13
+  else:
+    return 12
   
 # Calculate the Cylenian date as a tuple from days since the epoch (era,year,month,day)
 def tuple_from_days(days):
