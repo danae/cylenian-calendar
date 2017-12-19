@@ -30,7 +30,12 @@ def days_in_year(era, year):
     raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
     
   # Return the days in the year
-  return (392 - (1 if is_leap_era(era) else 0)) if year == 12 else 391 if year == 6 else 360
+  if year == 6:
+    return 391
+  elif year == 12:
+    return 392 - (1 if is_leap_era(era) else 0)
+  else:
+    return 360
   
 # Return the amount of days in a month (1~12)
 def days_in_month(era, year, month):
@@ -43,7 +48,12 @@ def days_in_month(era, year, month):
     raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
     
   # Return the days in the month
-  return 30 + ((1 if is_leap_era(era) else 2) if year == 12 else 1 if year == 6 else 0)
+  if year == 6 and month == 13:
+    return 31
+  elif year == 12 and month == 13:
+    return 32
+  else:
+    return 30
   
 # Return the amount of months in a year (1-12)
 def months_in_year(era, year):
@@ -66,15 +76,15 @@ def tuple_from_days(days):
     raise ValueError("The day {} is not a valid day; only positive days are supported".format(day))
     
   # Get the variables
-  while days > days_in_era(era):
-    era = era + 1
+  while days >= days_in_era(era):
     days -= days_in_era(era)
-  while days > days_in_year(era,year):
-    year = year + 1
+    era = era + 1
+  while days >= days_in_year(era,year):
     days -= days_in_year(era,year)
-  while days > days_in_month(era,year,month):
-    month = month + 1
+    year = year + 1
+  while days >= days_in_month(era,year,month):
     days -= days_in_month(era,year,month)
+    month = month + 1
   day = days + 1
     
   # Return the tuple
@@ -82,6 +92,8 @@ def tuple_from_days(days):
     
 # Calculate the days since the epoch from a Cylenian date
 def days_from_tuple(date):
+  print(date)
+
   # Assuming date is a tuple (era,year,month,day)
   era = date[0]
   year = date[1]
@@ -172,3 +184,7 @@ class date:
   @classmethod
   def from_gregorian(cls, date):
     return cls(gregorian.to_jdn(date) - cls.epoch)
+    
+  # Convert to string
+  def __str__(self):
+    return self.format_short()

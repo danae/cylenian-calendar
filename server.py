@@ -3,6 +3,7 @@ import datetime
 from parse import parse
 from flask import Flask, request
 from flask.json import jsonify
+from flask_cors import CORS
 
 # Encodes a Cylenian date into JSON
 def jsonify_date(date):
@@ -21,6 +22,7 @@ def jsonify_date(date):
 # Create a Flask application
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
+CORS(app)
 
 # Register an error handler for ValueErrors
 @app.errorhandler(ValueError)
