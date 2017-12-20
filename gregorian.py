@@ -2,10 +2,8 @@ import math
 
 # Convert a Gregorian date to Julian Date Number
 def to_jdn(date):
-  # Assuming date is a tuple (year,month,day)
-  year = date[0]
-  month = date[1]
-  day = date[2]
+  # Assuming date is a tuple (year, month, day)
+  (year,month,day) = date
   
   # Calculate the Julian Day
   a = math.trunc((14 - month) / 12)

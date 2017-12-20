@@ -95,11 +95,8 @@ def tuple_from_days(days):
     
 # Calculate the days since the epoch from a Cylenian date
 def days_from_tuple(date):
-  # Assuming date is a tuple (era,year,month,day)
-  era = date[0]
-  year = date[1]
-  month = date[2]
-  day = date[3]
+  # Assuming date is a tuple (era, year, month, day)
+  (era,year,month,day) = date
   
   # Check if the parameters are valid
   if era <= 0:
