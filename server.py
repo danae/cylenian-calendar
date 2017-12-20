@@ -30,6 +30,23 @@ def value_error(error):
   response = jsonify({'error': ','.join(error.args)})
   response.status_code = 400
   return response
+  
+# Get the date for days since epoch
+@app.route('/days.json')
+def days():
+  # Get the request day
+  day = request.args.get('day')
+  if day is None:
+    raise ValueError('No day argument was supplied')
+  
+  # Parse the date
+  day = int(day)
+  #if date is None:
+    #raise ValueError('The date is not a valid date; only dates of the format "era.year.month.day" are allowed')
+  
+  # Convert the date to a Cylenian date
+  date = cyleniandate.date(day)
+  return jsonify_date(date)
 
 # Get the date for a Cylenian representation
 @app.route('/cylenian.json')
