@@ -23,7 +23,7 @@ CylenianDate = collections.namedtuple("CylenianDate",["era","year","month","day"
 def is_leap_era(era):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
 
   # Return the value
   return ((era - 1) % 100 + 1) in leap_eras
@@ -32,7 +32,7 @@ def is_leap_era(era):
 def is_leap_year(year):
   # Assert parameters
   if year not in range(1,13):
-    raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
     
   # Return the value
   return year == 6 or year == 12
@@ -41,7 +41,7 @@ def is_leap_year(year):
 def days_in_era(era):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
     
   # Return the value
   return 4383 - (1 if is_leap_era(era) else 0)
@@ -50,9 +50,9 @@ def days_in_era(era):
 def days_in_year(era, year):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
     
   # Return the value
   if is_leap_year(year):  
@@ -64,11 +64,11 @@ def days_in_year(era, year):
 def days_in_month(era, year, month):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
   if month not in range(1,13 + (1 if is_leap_year(year) else 0)):
-    raise ValueError("The month {} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
+    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
     
   # Return the value
   if is_leap_year(year) and month == 13:
@@ -80,9 +80,9 @@ def days_in_month(era, year, month):
 def months_in_year(era, year):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
     
   # Return the value
   return 13 if is_leap_year(year) else 12
@@ -94,13 +94,13 @@ def to_jdn(date):
   
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
   if month not in range(1,13 + (1 if is_leap_year(year) else 0)):
-    raise ValueError("The month {} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
+    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
   if day not in range(1,days_in_month(era,year,month) + 1):
-    raise ValueError("The day {} is not a valid day; days are in the range 1-30 (31 or 32 in leap years)".format(day))
+    raise ValueError("The day {:r} is not a valid day; days are in the range 1-30 (31 or 32 in leap years)".format(day))
   
   # Loop over the variables
   ed = sum([days_in_era(e) for e in range(1,era)])
@@ -114,7 +114,7 @@ def to_jdn(date):
 def from_jdn(jdn):
   # Assert parameters
   if jdn - epoch < 0:
-    raise ValueError("The Julian Day Number {} is not a valid day; only days from {} are supported".format(jdn,epoch))
+    raise ValueError("The Julian Day Number {:r} is not a valid day; only days from {} are supported".format(jdn,epoch))
     
   # Initialize variables
   jdn = jdn - epoch

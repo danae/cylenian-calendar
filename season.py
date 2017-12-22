@@ -64,4 +64,4 @@ def ordinal(num):
   
 # Format a Season date
 def format(date):
-  return "{}{} day of {}".format(date.day,ordinal(date.day),str.capitalize(date.season))
+  return "{}, {}{} day of {}".format(date.year,date.day,ordinal(date.day),str.capitalize(date.season))

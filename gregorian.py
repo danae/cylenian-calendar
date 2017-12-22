@@ -12,8 +12,8 @@ def is_leap_year(year):
 # Return the amount of days in a month
 def days_in_month(year, month):
   # Assert parameters
-  if month not in range(0,13):
-    raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
+  if month not in range(1,13):
+    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12".format(month))
     
   # Return the value
   if month == 2:
@@ -27,10 +27,10 @@ def to_jdn(date):
   year, month, day = date
 
   # Assert parameters
-  if month not in range(0,13):
-    raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
+  if month not in range(1,13):
+    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12".format(month))
   if day not in range(1,days_in_month(year,month) + 1):
-    raise ValueError("The day {} is not a valid day; days are in the range 1-31, depending on the month".format(day))
+    raise ValueError("The day {:r} is not a valid day; days are in the range 1-31, depending on the month".format(day))
   
   # Calculate the Julian Day
   a = math.trunc((14 - month) / 12)
