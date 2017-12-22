@@ -103,9 +103,9 @@ def to_jdn(date):
     raise ValueError("The day {:r} is not a valid day; days are in the range 1-30 (31 or 32 in leap years)".format(day))
   
   # Loop over the variables
-  ed = sum([days_in_era(e) for e in range(1,era)])
-  yd = sum([days_in_year(era,y) for y in range(1,year)])
-  md = sum([days_in_month(era,year,m) for m in range(1,month)])
+  ed = sum(days_in_era(e) for e in range(1,era))
+  yd = sum(days_in_year(era,y) for y in range(1,year))
+  md = sum(days_in_month(era,year,m) for m in range(1,month))
   
   # Return the result
   return epoch + ed + yd + md + day - 1
