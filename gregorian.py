@@ -1,14 +1,13 @@
+import collections
 import math
+
+# Create a named tuple for Gregorian dates
+GregorianDate = collections.namedtuple("GregorianDate",["year","month","date"])
 
 # Return whether a year is a leap year
 def is_leap_year(year):
   # Return the value
-  if year % 4 == 0 and year % 100 != 0:
-    return True
-  elif year % 400 == 0:
-    return True
-  else:
-    return False
+  return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
     
 # Return the amount of days in a month
 def days_in_month(year, month):
@@ -22,8 +21,11 @@ def days_in_month(year, month):
   else:
     return 31 if month in [1,3,5,7,8,10,12] else 30
 
-# Convert a Gregorian date to Julian Date Number
-def to_jdn(year, month, day):
+# Convert a Gregorian date to a Julian Date Number
+def to_jdn(date):
+  # Assuming date is a GregorianDate tuple
+  year, month, day = date
+
   # Assert parameters
   if month not in range(0,13):
     raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
@@ -36,7 +38,7 @@ def to_jdn(year, month, day):
   m = month + 12 * a - 3
   return day + math.trunc((153 * m + 2) / 5) + 365 * y + math.trunc(y / 4) - math.trunc(y / 100) + math.trunc(y / 400) - 32045
   
-# Convert a Julian Date Number to Gregorian date
+# Convert a Julian Date Number to a Gregorian date
 def from_jdn(jdn):
   # Calculate the Gregorian date
   j = jdn + 32044
@@ -56,4 +58,4 @@ def from_jdn(jdn):
   day = d + 1
   
   # Create a tuple of the result
-  return year, month, day
+  return GregorianDate(year,month,day)
