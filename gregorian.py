@@ -2,7 +2,7 @@ import collections
 import math
 
 # Create a named tuple for Gregorian dates
-GregorianDate = collections.namedtuple("GregorianDate",["year","month","date"])
+GregorianDate = collections.namedtuple("GregorianDate",["year","month","day"])
 
 # Return whether a year is a leap year
 def is_leap_year(year):
@@ -59,3 +59,12 @@ def from_jdn(jdn):
   
   # Create a tuple of the result
   return GregorianDate(year,month,day)
+
+# Format a Gregorian date
+def format(date):
+  return "{0.year:04d}-{0.month:02d}-{0.day:02d}".format(date)
+
+# Return the difference in days between two Gregorian dates
+def difference(a, b):
+  return to_jdn(b) - to_jdn(a)
+  

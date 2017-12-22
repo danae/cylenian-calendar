@@ -4,6 +4,15 @@ import gregorian
 # The leap eras in a 100-era timespan
 leap_eras = [4,12,21,37,46,54,71,79,87]
 
+# The names of the Cylenian months
+month_names = [
+  "Elsy'ondleð", "Nae Boryeð", "Seniðin", 
+  "Liðin Boryeð", "Emmiðiða", "Omilnin", 
+  "Karðondleð", "Seðaneðr", "Liliðin", 
+  "Liðin Maroo", "Fðileð", "Elseniðor", 
+  "Naeð Molið"
+]
+
 # The Cylenian epoch as a Julian Date Number
 epoch = gregorian.to_jdn(gregorian.GregorianDate(-1944,12,21))
 
@@ -125,3 +134,11 @@ def from_jdn(jdn):
     
   # Return the tuple
   return CylenianDate(era,year,month,day)
+
+# Format a Cylenian date in short notation
+def format(date):
+  return "{0.era}.{0.year}.{0.month}.{0.day}".format(date)
+  
+# Format a Cylenian date in long notation
+def format_long(date):
+  return "{1} {0.day}, {0.era}E{0.year}".format(date,month_names[date.month - 1])
