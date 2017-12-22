@@ -1,9 +1,34 @@
 import math
 
+# Return whether a year is a leap year
+def is_leap_year(year):
+  # Return the value
+  if year % 4 == 0 and year % 100 != 0:
+    return True
+  elif year % 400 == 0:
+    return True
+  else:
+    return False
+    
+# Return the amount of days in a month
+def days_in_month(year, month):
+  # Assert parameters
+  if month not in range(0,13):
+    raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
+    
+  # Return the value
+  if month == 2:
+    return 29 if is_leap_year(year) else 28
+  else:
+    return 31 if month in [1,3,5,7,8,10,12] else 30
+
 # Convert a Gregorian date to Julian Date Number
-def to_jdn(date):
-  # Assuming date is a tuple (year, month, day)
-  (year,month,day) = date
+def to_jdn(year, month, day):
+  # Assert parameters
+  if month not in range(0,13):
+    raise ValueError("The month {} is not a valid month; months are in the range 1-12".format(month))
+  if day not in range(1,days_in_month(year,month) + 1):
+    raise ValueError("The day {} is not a valid day; days are in the range 1-31, depending on the month".format(day))
   
   # Calculate the Julian Day
   a = math.trunc((14 - month) / 12)
@@ -31,5 +56,4 @@ def from_jdn(jdn):
   day = d + 1
   
   # Create a tuple of the result
-  return (year,month,day)
-  
+  return year, month, day

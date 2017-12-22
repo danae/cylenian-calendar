@@ -2,7 +2,7 @@
 season_starts = {'winter': (12,21), 'spring': (3,21), 'summer': (6,21), 'autumn': (12,21)}
 
 # Get the season for a Gregorian date
-def get_season(date)
+def get_season(year, month, day):
   # Assuming date is a tuple (year, month, day)
   monthday = (date[1],date[2])
   
@@ -35,11 +35,4 @@ def start_of_season(date, season):
 # Get the day of the season for a Gregorian date
 def day_of_season(date):
   pass
-
-# Season class
-class season:
-  
-  # Constructor
-  def __init__(self, month, day):
-    self.season = calculate_season(month,day)
     

@@ -1,4 +1,4 @@
-import cyleniandate
+import date
 import datetime
 from parse import parse
 from flask import Flask, request
@@ -6,14 +6,14 @@ from flask.json import jsonify
 from flask_cors import CORS
 
 # Encodes a Cylenian date into JSON
-def jsonify_date(date):
+def jsonify_date(d):
   cylenian = {}
-  cylenian['date'] = dict(zip(('era','year','month','day'),date.to_cylenian()))
-  cylenian['daysSinceEpoch'] = date.days_since_epoch
-  cylenian['format'] = {'short': date.format_short(), 'long': date.format_long(), 'nameOfMonth': date.name_of_month()}
+  cylenian['date'] = dict(zip(('era','year','month','day'),d.cylenian()))
+  cylenian['daysSinceEpoch'] = d.days
+  cylenian['format'] = {'short': d.format_short(), 'long': d.format_long(), 'nameOfMonth': d.name_of_month()}
   
   gregorian = {}
-  gregorian['date'] = dict(zip(('year','month','day'),date.to_gregorian()))
+  gregorian['date'] = dict(zip(('year','month','day'),d.gregorian()))
   
   # Create a response object
   return jsonify(cylenian = cylenian, gregorian = gregorian)
@@ -40,47 +40,48 @@ def days():
     raise ValueError('No day argument was supplied')
   
   # Parse the date
-  day = int(day)
-  #if date is None:
-    #raise ValueError('The date is not a valid date; only dates of the format "era.year.month.day" are allowed')
+  try:
+    day = int(day)
+  except ValueError:
+    raise ValueError('The day is not a valid day; are you sure you entered a number?')
   
   # Convert the date to a Cylenian date
-  date = cyleniandate.date(day)
-  return jsonify_date(date)
+  d = date.Date(day)
+  return jsonify_date(d)
 
 # Get the date for a Cylenian representation
 @app.route('/cylenian.json')
 def cylenian():
   # Get the request date
-  date = request.args.get('date')
-  if date is None:
+  d = request.args.get('date')
+  if d is None:
     raise ValueError('No date argument was supplied')
   
   # Parse the date
-  date = parse("{:d}.{:d}.{:d}.{:d}",date)
-  if date is None:
+  d = parse("{:d}.{:d}.{:d}.{:d}",d)
+  if d is None:
     raise ValueError('The date is not a valid date; only dates of the format "era.year.month.day" are allowed')
   
   # Convert the date to a Cylenian date
-  date = cyleniandate.date.from_cylenian(date)
-  return jsonify_date(date)
+  d = cyleniandate.Date.from_cylenian(*d)
+  return jsonify_date(d)
 
 # Get the date for a Gregorian representation
 @app.route('/gregorian.json')
 def gregorian():
   # Get the request date
-  date = request.args.get('date')
-  if date is None:
+  d = request.args.get('date')
+  if d is None:
     raise ValueError('No date argument was supplied')
   
   # Parse the date
-  date = parse("{:04d}-{:02d}-{:02d}",date)
-  if date is None:
+  d = parse("{:04d}-{:02d}-{:02d}",d)
+  if d is None:
     raise ValueError('The date is not a valid date; only dates of the format "year-month-day" are allowed')
   
   # Convert the date to a Cylenian date
-  date = cyleniandate.date.from_gregorian(date)
-  return jsonify_date(date)
+  d = date.Date.from_gregorian(*d)
+  return jsonify_date(d)
 
 # Create a route for today
 @app.route('/today.json')
@@ -90,5 +91,5 @@ def today():
   today_tuple = today.timetuple()
   
   # Convert it to a Cylenian date
-  date = cyleniandate.date.from_gregorian(today_tuple)
-  return jsonify_date(date)
+  d = date.Date.from_gregorian(today_tuple)
+  return jsonify_date(d)
