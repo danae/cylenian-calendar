@@ -42,12 +42,11 @@ app.config['JSON_AS_ASCII'] = False
 CORS(app)
 
 # Register an error handler for ValueErrors
-'''@app.errorhandler(ValueError)
+@app.errorhandler(ValueError)
 def value_error(error):
   response = jsonify({'error': ','.join(error.args)})
   response.status_code = 400
   return response
-'''
   
 # Get the date for days since epoch
 @app.route('/days/<day>')

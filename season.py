@@ -1,7 +1,6 @@
 import bisect
 import collections
 import gregorian
-from gregorian import GregorianDate
 
 # Create a named tuple for Gregorian dates
 SeasonDate = collections.namedtuple("SeasonDate",["year","season","day"])
@@ -30,7 +29,7 @@ def get_season(date):
 # Convert a season date to a Gregorian date
 def to_gregorian(season):
   # Get the start of the season as a GregorianDate
-  season_start = GregorianDate(season.year,*seasons[season.season])
+  season_start = gregorian.GregorianDate(season.year,*seasons[season.season])
   season_start_jdn = gregorian.to_jdn(season_start)
   
   # Add the day number to the date
@@ -46,7 +45,7 @@ def from_gregorian(date):
     
   # Return the value
   season = get_season(date)
-  season_start = GregorianDate(season[0],*seasons[season[1]])
+  season_start = gregorian.GregorianDate(season[0],*seasons[season[1]])
   day = gregorian.difference(season_start,date) + 1
   return SeasonDate(*season,day)
   
