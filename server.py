@@ -10,31 +10,20 @@ from date import Date
 
 # Encodes a Cylenian date into JSON
 def jsonify_date(d):
-  cylenian_dict = {}
-  cylenian_dict['era'] = d.cylenian_date.era
-  cylenian_dict['year'] = d.cylenian_date.year
-  cylenian_dict['month'] = d.cylenian_date.month
-  cylenian_dict['day'] = d.cylenian_date.day
-  cylenian_dict['daysSinceEpoch'] = d.jdn - cylenian.epoch
-  cylenian_dict['format'] = d.format_cylenian()
-  cylenian_dict['longFormat'] = d.format_cylenian_long()
-  cylenian_dict['monthName'] =  cylenian.month_names[d.cylenian_date.month - 1]
-  
-  gregorian_dict = {}
-  gregorian_dict['year'] = d.gregorian_date.year
-  gregorian_dict['month'] = d.gregorian_date.month
-  gregorian_dict['day'] = d.gregorian_date.day
-  gregorian_dict['format'] = d.format_gregorian()
-  
-  season_dict = {}
-  season_dict['year'] = d.season_date.year
-  season_dict['season'] = d.season_date.season
-  season_dict['day'] = d.season_date.day
-  season_dict['format'] = d.format_season()
-  
+  cylenian_dict = d.cylenian_date.__dict__.copy()
+  cylenian_dict['format'] = d.cylenian_date.format()
+  cylenian_dict['longFormat'] = d.cylenian_date.format_long()
+  cylenian_dict['monthName'] =  cylenian.month_name(d.cylenian_date.month)
+
+  gregorian_dict = d.gregorian_date.__dict__.copy()
+  gregorian_dict['format'] = d.gregorian_date.format()
+
+  moon_dict = d.moon.__dict__.copy()
+  moon_dict['format'] = d.moon.format()
+
   # Create a response object
-  return jsonify(jdn = d.jdn, cylenianDate = cylenian_dict, gregorianDate = gregorian_dict, season = season_dict)
-  
+  return jsonify(jdn = d.jdn, cylenian_date = cylenian_dict, gregorian_date = gregorian_dict, moon = moon_dict)
+
 
 # Create a Flask application
 app = Flask(__name__)
@@ -47,12 +36,6 @@ def value_error(error):
   response = jsonify({'error': ','.join(error.args)})
   response.status_code = 400
   return response
-  
-# Get the date for days since epoch
-@app.route('/days/<day>')
-def days(day):
-  d = Date(day)
-  return jsonify_date(d)
 
 # Get the date for a Cylenian representation
 @app.route('/cylenian/<int:era>/<int:year>/<int:month>/<int:day>')
@@ -69,10 +52,5 @@ def gregorian_date(year, month, day):
 # Create a route for today
 @app.route('/today')
 def today():
-  # Get the date of today
-  today = datetime.date.today()
-  today_tuple = today.timetuple()[:3]
-  
-  # Convert it to a Cylenian date
-  d = Date.from_gregorian(today_tuple)
+  d = Date.today()
   return jsonify_date(d)

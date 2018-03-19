@@ -1,5 +1,4 @@
-import collections
-import gregorian
+from functools import total_ordering
 
 # The leap eras in a 100-era timespan
 leap_eras = [4,12,21,37,46,54,71,79,87]
@@ -13,17 +12,18 @@ month_names = [
   "Naeð Molið"
 ]
 
-# The Cylenian epoch as a Julian Date Number
-epoch = gregorian.to_jdn(gregorian.GregorianDate(-1944,12,21))
+# Return the name of a month
+def month_name(month):
+  return month_names[month - 1]
 
-# Create a named tuple for Cylenian dates
-CylenianDate = collections.namedtuple("CylenianDate",["era","year","month","day"])
+# The Cylenian epoch as a Julian Date Number (equals to 21 december 1946 BCE)
+epoch = 1011384
 
 # Return whether an era is a leap era
 def is_leap_era(era):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
 
   # Return the value
   return ((era - 1) % 100 + 1) in leap_eras
@@ -32,7 +32,7 @@ def is_leap_era(era):
 def is_leap_year(year):
   # Assert parameters
   if year not in range(1,13):
-    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:d} is not a valid year; years are in the range 1-12".format(year))
 
   # Return the value
   return year == 6 or year == 12
@@ -41,7 +41,7 @@ def is_leap_year(year):
 def days_in_era(era):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
 
   # Return the value
   return 4383 - (1 if is_leap_era(era) else 0)
@@ -50,9 +50,9 @@ def days_in_era(era):
 def days_in_year(era, year):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:d} is not a valid year; years are in the range 1-12".format(year))
 
   # Return the value
   if is_leap_year(year):
@@ -64,11 +64,11 @@ def days_in_year(era, year):
 def days_in_month(era, year, month):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:d} is not a valid year; years are in the range 1-12".format(year))
   if month not in range(1,13 + (1 if is_leap_year(year) else 0)):
-    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
+    raise ValueError("The month {:d} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
 
   # Return the value
   if is_leap_year(year) and month == 13:
@@ -80,38 +80,15 @@ def days_in_month(era, year, month):
 def months_in_year(era, year):
   # Assert parameters
   if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
   if year not in range(1,13):
-    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
+    raise ValueError("The year {:d} is not a valid year; years are in the range 1-12".format(year))
 
   # Return the value
   return 13 if is_leap_year(year) else 12
 
-# Convert a Cylenian date to a Julian Day Number
-def to_jdn(date):
-  # Assuming date is a CylenianDate tuple
-  era, year, month, day = date
-
-  # Assert parameters
-  if era <= 0:
-    raise ValueError("The era {:r} is not a valid era; only positive eras are supported".format(era))
-  if year not in range(1,13):
-    raise ValueError("The year {:r} is not a valid year; years are in the range 1-12".format(year))
-  if month not in range(1,13 + (1 if is_leap_year(year) else 0)):
-    raise ValueError("The month {:r} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
-  if day not in range(1,days_in_month(era,year,month) + 1):
-    raise ValueError("The day {:r} is not a valid day; days are in the range 1-30 (31 or 32 in leap years)".format(day))
-
-  # Loop over the variables
-  ed = sum(days_in_era(e) for e in range(1,era))
-  yd = sum(days_in_year(era,y) for y in range(1,year))
-  md = sum(days_in_month(era,year,m) for m in range(1,month))
-
-  # Return the result
-  return epoch + ed + yd + md + day - 1
-
-# Convert a Julian Day Number to a Cylenian date
-def from_jdn(jdn):
+# Convert a JDN to a Cylenian date
+def jdn_to_cylenian(jdn):
   # Assert parameters
   if jdn - epoch < 0:
     raise ValueError("The Julian Day Number {} is not a valid day; only days from {} are supported".format(jdn,epoch))
@@ -132,13 +109,55 @@ def from_jdn(jdn):
     month = month + 1
   day = jdn + 1
 
-  # Return the tuple
-  return CylenianDate(era,year,month,day)
+  # Return the result
+  return (era, year, month, day)
 
-# Format a Cylenian date in short notation
-def format(date):
-  return "{0.era}.{0.year}.{0.month}.{0.day}".format(date)
+# Convert this Cylenian date to a JDN
+def cylenian_to_jdn(era, year, month, day):
+  # Assert fields
+  if era <= 0:
+    raise ValueError("The era {:d} is not a valid era; only positive eras are supported".format(era))
+  if year not in range(1,13):
+    raise ValueError("The year {:d} is not a valid year; years are in the range 1-12".format(year))
+  if month not in range(1,13 + (1 if is_leap_year(year) else 0)):
+    raise ValueError("The month {:d} is not a valid month; months are in the range 1-12 (13 in leap years)".format(month))
+  if day not in range(1,days_in_month(era,year,month) + 1):
+    raise ValueError("The day {:d} is not a valid day; days are in the range 1-30 (31 or 32 in leap years)".format(day))
 
-# Format a Cylenian date in long notation
-def format_long(date):
-  return "{1} {0.day}, {0.era}E{0.year}".format(date,month_names[date.month - 1])
+  # Loop over the fields
+  era_days = sum(days_in_era(e) for e in range(1,self,era))
+  year_days = sum(days_in_year(era,y) for y in range(1,self.year))
+  month_days = sum(days_in_month(era,year,m) for m in range(1,self.month))
+
+  # Return the result
+  return epoch + era_days + year_days + month_days + day - 1
+
+
+# Cylenian date class
+@total_ordering
+class CylenianDate:
+  # Constructor
+  def __init__(self, jdn):
+    self.jdn = jdn
+    self.days_since_epoch = jdn - epoch
+    self.era, self.year, self.month, self.day = jdn_to_cylenian(jdn)
+
+  # Comparison operators
+  def __eq__(self, other):
+    return self.jdn == other.jdn
+  def __lt__(self, other):
+    return self.jdn < other.jdn
+  def __hash__(self):
+    return hash(self.jdn)
+
+  # Format this Cylenian date in the short notation
+  def format(self):
+    return "{0.era}.{0.year}.{0.month}.{0.day}".format(self)
+
+  # Format this Cylenian date in the long notation
+  def format_long(self):
+    return "{1} {0.day}, {0.era}E{0.year}".format(self,month_name(self.month))
+
+  # Convert this Cylenian date to a string
+  def __str__(self):
+    return self.format_long()
